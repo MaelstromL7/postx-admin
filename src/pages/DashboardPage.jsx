@@ -7,7 +7,10 @@ import {
     Users,
     CheckCircle,
     XCircle,
-    Loader2
+    Loader2,
+    UserCheck,
+    UserX,
+    Cpu
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -17,7 +20,11 @@ export default function DashboardPage() {
         active_projects: 0,
         inactive_projects: 0,
         total_scripts: 0,
-        total_vfx_shots: 0
+        total_vfx_shots: 0,
+        active_users_7d: 0,
+        active_users_30d: 0,
+        suspended_users: 0,
+        total_ai_tokens: 0,
     });
     const [recentActivity, setRecentActivity] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -71,41 +78,17 @@ export default function DashboardPage() {
                     </div>
                 ) : (
                     <div className="space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <StatCard
-                                label="Total Proyectos"
-                                value={stats.total_projects}
-                                icon={FolderKanban}
-                            />
-                            <StatCard
-                                label="Usuarios Registrados"
-                                value={stats.total_users}
-                                icon={Users}
-                            />
-                            <StatCard
-                                label="Guiones / Scripts"
-                                value={stats.total_scripts}
-                                icon={CheckCircle}
-                                colorClass="text-green-500"
-                            />
-                            <StatCard
-                                label="Shots de VFX"
-                                value={stats.total_vfx_shots}
-                                icon={XCircle}
-                                colorClass="text-accent"
-                            />
-                            <StatCard
-                                label="Proyectos Activos"
-                                value={stats.active_projects}
-                                icon={CheckCircle}
-                                colorClass="text-green-500"
-                            />
-                            <StatCard
-                                label="Proyectos Bloqueados"
-                                value={stats.inactive_projects}
-                                icon={XCircle}
-                                colorClass="text-red-500"
-                            />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <StatCard label="Total Proyectos" value={stats.total_projects} icon={FolderKanban} />
+                            <StatCard label="Usuarios Totales" value={stats.total_users} icon={Users} />
+                            <StatCard label="Guiones / Scripts" value={stats.total_scripts} icon={CheckCircle} colorClass="text-green-500" />
+                            <StatCard label="Shots de VFX" value={stats.total_vfx_shots} icon={XCircle} colorClass="text-accent" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <StatCard label="Activos (7 días)" value={stats.active_users_7d} icon={UserCheck} colorClass="text-green-400" />
+                            <StatCard label="Activos (30 días)" value={stats.active_users_30d} icon={UserCheck} colorClass="text-blue-400" />
+                            <StatCard label="Usuarios Suspendidos" value={stats.suspended_users} icon={UserX} colorClass="text-red-400" />
+                            <StatCard label="Total Tokens IA" value={stats.total_ai_tokens.toLocaleString()} icon={Cpu} colorClass="text-purple-400" />
                         </div>
 
                         <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-6 shadow-xl">

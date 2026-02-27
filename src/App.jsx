@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage';
 import ProjectsPage from './pages/ProjectsPage';
 import UsersPage from './pages/UsersPage';
 import ActivityPage from './pages/ActivityPage';
+import AILogsPage from './pages/AILogsPage';
 
 function App() {
   return (
@@ -46,6 +47,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <ActivityPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/ai-logs"
+            element={
+              <ProtectedRoute>
+                <AILogsPage />
               </ProtectedRoute>
             }
           />
