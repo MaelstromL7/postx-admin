@@ -386,7 +386,8 @@ export default function ProjectsPage() {
             setActionLoading(project.id + '_export');
             const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/projects/${project.id}/export`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('postx_admin_token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('postx_admin_token')}`,
+                    'ngrok-skip-browser-warning': 'any'
                 }
             });
             if (!res.ok) throw new Error("Error en la descarga");
