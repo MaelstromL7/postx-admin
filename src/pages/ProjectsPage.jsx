@@ -3,7 +3,8 @@ import Sidebar from '../components/Sidebar';
 import { apiRequest } from '../api/client';
 import {
     Users, ChevronRight, X, Plus, Trash2, ArrowLeft,
-    Download, Calendar, ShieldCheck, ShieldAlert
+    Download, Calendar, ShieldCheck, ShieldAlert,
+    Search, CheckCircle, XCircle, Loader2, Filter
 } from 'lucide-react';
 
 const ROLES = ['POST_PRODUCER', 'POST_COORDINATOR', 'VFX_SUPERVISOR'];
