@@ -79,33 +79,37 @@ export default function UsersPage() {
                             <tr className="border-b border-gray-800 bg-gray-900/80">
                                 <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Usuario</th>
                                 <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Registro</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Estado</th>
+                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Última Conexión</th>
+                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Proyectos / Permisos</th>
                                 <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-800/50">
                             {loading ? (
                                 <tr>
-                                    <td colSpan="4" className="py-20 text-center text-accent">
+                                    <td colSpan="5" className="py-20 text-center text-accent">
                                         <Loader2 className="animate-spin mx-auto mb-2" size={32} />
                                         <span className="text-sm">Cargando usuarios...</span>
                                     </td>
                                 </tr>
                             ) : filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan="4" className="py-20 text-center text-gray-500">
+                                    <td colSpan="5" className="py-20 text-center text-gray-500">
                                         No se encontraron usuarios.
                                     </td>
                                 </tr>
                             ) : (
                                 filteredUsers.map((user) => (
-                                    <tr key={user.id} className="hover:bg-gray-800/30 transition-colors">
+                                    <tr key={user.id} className="hover:bg-gray-800/30 transition-colors border-l-2 border-transparent hover:border-accent">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center space-x-3">
                                                 <div className="p-2 bg-accent/10 rounded-lg text-accent">
                                                     <Mail size={16} />
                                                 </div>
-                                                <span className="font-medium text-white">{user.email}</span>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium text-white">{user.first_name} {user.last_name}</span>
+                                                    <span className="text-gray-500 text-xs">{user.email}</span>
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -115,17 +119,37 @@ export default function UsersPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            {user.is_suspended ? (
-                                                <div className="flex items-center space-x-1.5 text-red-500 bg-red-500/10 px-2 py-1 rounded-full text-xs font-bold w-fit">
-                                                    <ShieldAlert size={14} />
-                                                    <span>SUSPENDIDO</span>
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center space-x-1.5 text-green-500 bg-green-500/10 px-2 py-1 rounded-full text-xs font-bold w-fit">
-                                                    <ShieldCheck size={14} />
-                                                    <span>ACTIVO</span>
-                                                </div>
-                                            )}
+                                            <div className="flex flex-col text-sm text-gray-400">
+                                                {user.last_login_at ? (
+                                                    <>
+                                                        <span className="text-white font-medium">{new Date(user.last_login_at).toLocaleDateString()}</span>
+                                                        <span className="text-[10px] text-gray-500">{new Date(user.last_login_at).toLocaleTimeString()}</span>
+                                                        {user.last_login_location && (
+                                                            <span className="text-[10px] text-accent/70 mt-0.5">{user.last_login_location}</span>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <span className="italic text-gray-600">Nunca</span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex flex-wrap gap-1.5 max-w-[240px]">
+                                                {user.project_access?.length > 0 ? (
+                                                    user.project_access.map((pa, idx) => (
+                                                        <div key={idx} className="bg-gray-900 border border-gray-700/50 rounded px-2 py-0.5 text-[10px]">
+                                                            <span className="text-accent font-bold uppercase tracking-tighter mr-1">
+                                                                {pa.role === 'POST_PRODUCER' ? 'PP' :
+                                                                    pa.role === 'POST_COORDINATOR' ? 'PC' :
+                                                                        pa.role === 'VFX_SUPERVISOR' ? 'VFX' : 'U'}
+                                                            </span>
+                                                            <span className="text-gray-300">{pa.project_name}</span>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-gray-600 text-xs italic">Sin proyectos asignados</span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             {actionLoading === user.id ? (
@@ -134,8 +158,8 @@ export default function UsersPage() {
                                                 <button
                                                     onClick={() => toggleUserStatus(user.id, user.is_suspended)}
                                                     className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all border ${user.is_suspended
-                                                            ? 'bg-accent/10 text-accent border-accent/30 hover:bg-accent/20'
-                                                            : 'bg-red-500/10 text-red-500 border-red-500/30 hover:bg-red-500/20'
+                                                        ? 'bg-accent/10 text-accent border-accent/30 hover:bg-accent/20'
+                                                        : 'bg-red-500/10 text-red-500 border-red-500/30 hover:bg-red-500/20'
                                                         }`}
                                                 >
                                                     {user.is_suspended ? 'REACTIVAR' : 'SUSPENDER'}

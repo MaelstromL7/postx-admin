@@ -4,6 +4,7 @@ import {
     LayoutDashboard,
     FolderKanban,
     Users,
+    Activity,
     LogOut,
     User
 } from 'lucide-react';
@@ -22,6 +23,7 @@ export default function Sidebar() {
         { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
         { label: 'Proyectos', path: '/projects', icon: FolderKanban },
         { label: 'Usuarios', path: '/users', icon: Users },
+        { label: 'Actividad', path: '/activity', icon: Activity },
     ];
 
     return (
@@ -39,8 +41,8 @@ export default function Sidebar() {
                             key={item.path}
                             to={item.path}
                             className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                                    ? 'bg-accent/10 text-accent'
-                                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                ? 'bg-accent/10 text-accent'
+                                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                                 }`}
                         >
                             <Icon size={20} />
