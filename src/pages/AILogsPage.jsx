@@ -32,25 +32,55 @@ export default function AILogsPage() {
         ? Math.round(logs.reduce((s, l) => s + (l.latency_ms || 0), 0) / logs.length)
         : 0;
 
+    const exportToCSV = () => {
+        const headers = ['Fecha', 'Modelo', 'Prompt Tokens', 'Completion Tokens', 'Total Tokens', 'Latencia (ms)', 'Prompt'];
+        const rows = logs.map(l => [
+            new Date(l.created_at).toLocaleString(),
+            l.model_id,
+            l.prompt_tokens || 0,
+            l.completion_tokens || 0,
+            l.total_tokens || 0,
+            l.latency_ms || 0,
+            l.prompt || ''
+        ]);
+
+        const csvContent = [headers, ...rows].map(e => e.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', `ai_logs_postx_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="bg-dark min-h-screen">
             <Sidebar />
             <main className="pl-64 p-8">
                 <header className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                        <h1 className="text-3xl font-bold text-white flex items-center gap-3 tracking-tight">
                             <Cpu className="text-accent" size={30} />
                             Logs de IA
                         </h1>
-                        <p className="text-gray-400 mt-1">Registro de uso de modelos de inteligencia artificial</p>
+                        <p className="text-gray-400 mt-1 font-medium">Registro de uso de modelos de inteligencia artificial</p>
                     </div>
-                    <button
-                        onClick={fetchLogs}
-                        disabled={loading}
-                        className="p-2.5 bg-gray-900 border border-gray-800 rounded-xl text-gray-400 hover:text-white transition-colors disabled:opacity-50"
-                    >
-                        <RefreshCcw size={18} className={loading ? 'animate-spin' : ''} />
-                    </button>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={exportToCSV}
+                            className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-xl text-gray-300 text-sm font-bold hover:bg-gray-700 transition-all active:scale-95"
+                        >
+                            Exportar CSV
+                        </button>
+                        <button
+                            onClick={fetchLogs}
+                            disabled={loading}
+                            className="p-2.5 bg-gray-900 border border-gray-800 rounded-xl text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+                        >
+                            <RefreshCcw size={18} className={loading ? 'animate-spin' : ''} />
+                        </button>
+                    </div>
                 </header>
 
                 {/* KPIs */}
