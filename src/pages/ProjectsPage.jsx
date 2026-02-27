@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import { apiRequest } from '../api/client';
 import {
-    Search, CheckCircle, XCircle, Loader2, Filter,
-    Users, ChevronRight, X, Plus, Trash2, ArrowLeft
+    Users, ChevronRight, X, Plus, Trash2, ArrowLeft,
+    Download, Calendar, ShieldCheck, ShieldAlert
 } from 'lucide-react';
 
 const ROLES = ['POST_PRODUCER', 'POST_COORDINATOR', 'VFX_SUPERVISOR'];
@@ -202,6 +202,143 @@ function MembersDrawer({ project, onClose }) {
     );
 }
 
+// ─── CREATE PROJECT MODAL ───────────────────────────────────────────────────
+function CreateProjectModal({ onClose, onSuccess }) {
+    const [form, setForm] = useState({ name: '', type: 'FEATURE', owner_email: '' });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true); setError(null);
+        try {
+            await apiRequest('/admin/projects', {
+                method: 'POST',
+                body: JSON.stringify(form)
+            });
+            onSuccess();
+            onClose();
+        } catch (err) {
+            setError(err.message || 'Error al crear proyecto.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+            <div className="bg-gray-950 border border-gray-800 rounded-2xl w-full max-w-md shadow-2xl p-6">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2"><Plus size={20} className="text-accent" /> Nuevo Proyecto</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors"><X size={20} /></button>
+                </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Nombre del Proyecto</label>
+                        <input required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
+                    </div>
+                    <div>
+                        <label className="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Tipo</label>
+                        <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                            <option value="FEATURE">LARGOMETRAJE</option>
+                            <option value="SERIES">SERIE</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Email del Dueño (Owner)</label>
+                        <input required type="email" value={form.owner_email} onChange={e => setForm(f => ({ ...f, owner_email: e.target.value }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
+                        <p className="text-[10px] text-gray-500 mt-1">Se enviará una invitación si el usuario no existe.</p>
+                    </div>
+                    {error && <p className="text-red-400 text-sm">{error}</p>}
+                    <div className="flex gap-3 pt-2">
+                        <button type="button" onClick={onClose} className="flex-1 px-4 py-2 text-sm rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">Cancelar</button>
+                        <button type="submit" disabled={loading} className="flex-1 px-4 py-2 text-sm rounded-lg bg-accent text-dark font-bold hover:bg-accent/80 transition-colors disabled:opacity-50">
+                            {loading ? <Loader2 className="animate-spin mx-auto" size={16} /> : 'Crear Proyecto'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}
+
+// ─── LICENSE MODAL ──────────────────────────────────────────────────────────
+function LicenseModal({ project, onClose, onSuccess }) {
+    const [form, setForm] = useState({
+        plan_type: project.license?.plan_type || 'TRIAL',
+        status: project.license?.status || 'ACTIVE',
+        is_active: project.license?.is_active ?? true,
+        expires_at: project.license?.expires_at ? new Date(project.license.expires_at).toISOString().split('T')[0] : ''
+    });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true); setError(null);
+        try {
+            await apiRequest(`/admin/projects/${project.id}/license`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    ...form,
+                    expires_at: form.expires_at ? new Date(form.expires_at).toISOString() : null
+                })
+            });
+            onSuccess();
+            onClose();
+        } catch (err) {
+            setError(err.message || 'Error al actualizar licencia.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+            <div className="bg-gray-950 border border-gray-800 rounded-2xl w-full max-w-md shadow-2xl p-6">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2"><ShieldCheck size={20} className="text-accent" /> Gestión de Licencia</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors"><X size={20} /></button>
+                </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Plan</label>
+                        <select value={form.plan_type} onChange={e => setForm(f => ({ ...f, plan_type: e.target.value }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                            <option value="TRIAL">TRIAL (GRATIS)</option>
+                            <option value="PRO">PRO (PAGO)</option>
+                            <option value="ENTERPRISE">ENTERPRISE</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Estado</label>
+                        <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                            <option value="ACTIVE">ACTIVA</option>
+                            <option value="GRACE_PERIOD">PERIODO DE GRACIA</option>
+                            <option value="EXPIRED">EXPIRADA</option>
+                            <option value="SUSPENDED">SUSPENDIDA / BLOQUEADA</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Fecha de Expiración</label>
+                        <input type="date" value={form.expires_at} onChange={e => setForm(f => ({ ...f, expires_at: e.target.value }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
+                    </div>
+                    <div className="flex items-center gap-3 bg-gray-900/50 p-3 rounded-lg border border-gray-800">
+                        <input type="checkbox" id="is_active_check" checked={form.is_active} onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))} className="w-4 h-4 accent-accent" />
+                        <label htmlFor="is_active_check" className="text-sm text-white font-medium cursor-pointer">Licencia Habilitada (Manual Override)</label>
+                    </div>
+                    {error && <p className="text-red-400 text-sm">{error}</p>}
+                    <div className="flex gap-3 pt-2">
+                        <button type="button" onClick={onClose} className="flex-1 px-4 py-2 text-sm rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">Cancelar</button>
+                        <button type="submit" disabled={loading} className="flex-1 px-4 py-2 text-sm rounded-lg bg-accent text-dark font-bold hover:bg-accent/80 transition-colors disabled:opacity-50">
+                            {loading ? <Loader2 className="animate-spin mx-auto" size={16} /> : 'Guardar Cambios'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}
+
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 export default function ProjectsPage() {
     const [projects, setProjects] = useState([]);
@@ -209,6 +346,8 @@ export default function ProjectsPage() {
     const [actionLoading, setActionLoading] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedProject, setSelectedProject] = useState(null);
+    const [licenseProject, setLicenseProject] = useState(null);
+    const [showCreate, setShowCreate] = useState(false);
     const [showBlockedOnly, setShowBlockedOnly] = useState(false);
 
     useEffect(() => { fetchProjects(); }, []);
@@ -228,11 +367,39 @@ export default function ProjectsPage() {
     const toggleLicense = async (id, currentStatus) => {
         try {
             setActionLoading(id);
-            const endpoint = currentStatus ? `/admin/projects/${id}/activate` : `/admin/projects/${id}/deactivate`;
-            await apiRequest(endpoint, { method: 'POST' });
+            // We use the new PATCH endpoint for consistency
+            await apiRequest(`/admin/projects/${id}/license`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: currentStatus ? 'ACTIVE' : 'SUSPENDED' })
+            });
             await fetchProjects();
         } catch (err) {
             alert('Error al actualizar el estado de la licencia');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleExportZip = async (project) => {
+        try {
+            setActionLoading(project.id + '_export');
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/projects/${project.id}/export`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('postx_admin_token')}`
+                }
+            });
+            if (!res.ok) throw new Error("Error en la descarga");
+
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `export_${project.name.replace(/\s+/g, '_')}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            alert("Error al exportar: " + err.message);
         } finally {
             setActionLoading(null);
         }
@@ -248,6 +415,8 @@ export default function ProjectsPage() {
         <div className="bg-dark min-h-screen">
             <Sidebar />
             {selectedProject && <MembersDrawer project={selectedProject} onClose={() => setSelectedProject(null)} />}
+            {showCreate && <CreateProjectModal onClose={() => setShowCreate(false)} onSuccess={fetchProjects} />}
+            {licenseProject && <LicenseModal project={licenseProject} onClose={() => setLicenseProject(null)} onSuccess={fetchProjects} />}
 
             <main className="pl-64 p-8">
                 <header className="flex justify-between items-center mb-8">
@@ -266,6 +435,9 @@ export default function ProjectsPage() {
                         >
                             <Filter size={16} />
                             {showBlockedOnly ? 'Solo Bloqueados' : 'Filtrar'}
+                        </button>
+                        <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-5 py-2.5 bg-accent text-dark text-sm font-black rounded-xl hover:shadow-[0_0_20px_rgba(180,250,50,0.3)] transition-all active:scale-95 uppercase tracking-wide">
+                            <Plus size={16} strokeWidth={3} /> Nuevo
                         </button>
                     </div>
                 </header>
@@ -297,10 +469,18 @@ export default function ProjectsPage() {
                                         </td>
                                         <td className="px-6 py-5 text-gray-400 text-sm font-medium">{new Date(project.created_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                                         <td className="px-6 py-5">
-                                            {project.is_blocked ? (
-                                                <div className="flex items-center space-x-2 text-red-500 bg-red-500/10 px-3 py-1 rounded-lg text-xs font-black w-fit border border-red-500/20"><XCircle size={14} /><span>BLOQUEADO</span></div>
+                                            {project.license?.status === 'EXPIRED' || (project.license?.expires_at && new Date(project.license.expires_at) < new Date()) ? (
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex items-center space-x-2 text-red-500 bg-red-500/10 px-3 py-1 rounded-lg text-[10px] font-black w-fit border border-red-500/20"><XCircle size={12} /><span>EXPIRADA</span></div>
+                                                    {project.license?.expires_at && <p className="text-[10px] text-gray-600 font-medium">Venció: {new Date(project.license.expires_at).toLocaleDateString()}</p>}
+                                                </div>
+                                            ) : project.license?.status === 'SUSPENDED' ? (
+                                                <div className="flex items-center space-x-2 text-orange-500 bg-orange-500/10 px-3 py-1 rounded-lg text-[10px] font-black w-fit border border-orange-500/20"><ShieldAlert size={12} /><span>SUSPENDIDA</span></div>
                                             ) : (
-                                                <div className="flex items-center space-x-2 text-green-500 bg-green-500/10 px-3 py-1 rounded-lg text-xs font-black w-fit border border-green-500/20"><CheckCircle size={14} /><span>LICENCIA ACTIVA</span></div>
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex items-center space-x-2 text-green-500 bg-green-500/10 px-3 py-1 rounded-lg text-[10px] font-black w-fit border border-green-500/20"><CheckCircle size={12} /><span>ACTIVA</span></div>
+                                                    {project.license?.expires_at && <p className="text-[10px] text-gray-600 font-medium">Expira: {new Date(project.license.expires_at).toLocaleDateString()}</p>}
+                                                </div>
                                             )}
                                         </td>
                                         <td className="px-6 py-5">
@@ -308,23 +488,46 @@ export default function ProjectsPage() {
                                                 {/* Ver miembros */}
                                                 <button
                                                     onClick={() => setSelectedProject(project)}
-                                                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white/5 text-white hover:bg-white/10 border border-white/10 transition-all active:scale-95"
+                                                    title="Gestionar miembros"
+                                                    className="p-2 rounded-xl bg-white/5 text-white hover:bg-white/10 border border-white/10 transition-all active:scale-95"
                                                 >
-                                                    <Users size={14} /> Miembros
+                                                    <Users size={16} />
                                                 </button>
+
+                                                {/* Gestionar Licencia */}
+                                                <button
+                                                    onClick={() => setLicenseProject(project)}
+                                                    title="Gestionar licencia"
+                                                    className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition-all active:scale-95"
+                                                >
+                                                    <Calendar size={16} />
+                                                </button>
+
+                                                {/* Exportar ZIP */}
+                                                {actionLoading === project.id + '_export' ? (
+                                                    <Loader2 className="animate-spin text-accent" size={20} />
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleExportZip(project)}
+                                                        title="Exportar toda la información (ZIP)"
+                                                        className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 transition-all active:scale-95"
+                                                    >
+                                                        <Download size={16} />
+                                                    </button>
+                                                )}
 
                                                 {/* Activar / Desactivar */}
                                                 {actionLoading === project.id ? (
                                                     <div className="w-10 flex justify-center"><Loader2 className="animate-spin text-accent" size={20} /></div>
                                                 ) : (
                                                     <button
-                                                        onClick={() => toggleLicense(project.id, project.is_blocked)}
-                                                        className={`px-4 py-2 rounded-xl text-xs font-black transition-all active:scale-95 ${project.is_blocked
+                                                        onClick={() => toggleLicense(project.id, project.is_blocked || project.license?.status === 'SUSPENDED')}
+                                                        className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all active:scale-95 ${project.is_blocked || project.license?.status === 'SUSPENDED'
                                                             ? 'bg-accent text-dark hover:shadow-[0_0_20px_rgba(180,250,50,0.4)]'
                                                             : 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20'
                                                             }`}
                                                     >
-                                                        {project.is_blocked ? 'ACTIVAR' : 'BLOQUEAR'}
+                                                        {project.is_blocked || project.license?.status === 'SUSPENDED' ? 'ACTIVAR' : 'BLOQUEAR'}
                                                     </button>
                                                 )}
                                             </div>

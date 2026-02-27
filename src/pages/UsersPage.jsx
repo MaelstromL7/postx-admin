@@ -188,6 +188,26 @@ export default function UsersPage() {
         }
     };
 
+    const handleHardDeleteUser = async (id, email) => {
+        if (!confirm(`¿Estás seguro de ELIMINAR PERMANENTEMENTE al usuario ${email}?\n\nEsta acción no se puede deshacer. Los proyectos que este usuario haya creado no se borrarán, pero su autoría quedará anonimizada.`)) return;
+
+        const confirmation = prompt(`Escribe el email del usuario (${email}) para confirmar el borrado definitivo:`);
+        if (confirmation !== email) {
+            alert("El email no coincide. Operación cancelada.");
+            return;
+        }
+
+        try {
+            setActionLoading(id + '_delete');
+            await apiRequest(`/admin/users/${id}`, { method: 'DELETE' });
+            await fetchData();
+        } catch (err) {
+            alert('Error al eliminar usuario: ' + err.message);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
     const handleImpersonate = async (user) => {
         try {
             setImpersonating(user.id);
@@ -371,6 +391,19 @@ export default function UsersPage() {
                                                                     }`}
                                                             >
                                                                 {user.is_suspended ? 'REACTIVAR' : 'SUSPENDER'}
+                                                            </button>
+                                                        )}
+
+                                                        {/* Eliminar Definitivamente */}
+                                                        {actionLoading === user.id + '_delete' ? (
+                                                            <div className="w-12 flex justify-center"><Loader2 className="animate-spin text-red-500" size={20} /></div>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => handleHardDeleteUser(user.id, user.email)}
+                                                                title="ELIMINAR PERMANENTEMENTE"
+                                                                className="p-2 rounded-xl bg-red-600/10 text-red-500 border border-red-600/20 hover:bg-red-600/30 transition-all active:scale-95"
+                                                            >
+                                                                <Trash2 size={16} />
                                                             </button>
                                                         )}
                                                     </>
