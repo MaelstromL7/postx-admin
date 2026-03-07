@@ -49,3 +49,5 @@ Misma estrategia de ramas aplica allá.
 ## Commits
 - Ruff lint corre automáticamente en pre-commit (solo para archivos backend si se tocan)
 - Formato: `feat:`, `fix:`, `chore:` en inglés
+- **No agregar `Co-Authored-By: Claude` ni ninguna firma de Claude en los commits**
+- **No agregar comentarios en el código que identifiquen a Claude como autor**
