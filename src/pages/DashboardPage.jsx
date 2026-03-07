@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import StatCard from '../components/StatCard';
-import { apiRequest } from '../api/client';
+import { apiRequest, parseDate } from '../api/client';
 import {
     FolderKanban,
     Users,
@@ -109,7 +109,7 @@ export default function DashboardPage() {
                                                     <span className="text-accent">{log.entity_table}</span>
                                                 </p>
                                                 <p className="text-gray-500 text-[10px] mt-1 uppercase tracking-tighter">
-                                                    {new Date(log.timestamp).toLocaleString()}
+                                                    {parseDate(log.timestamp).toLocaleString()}
                                                 </p>
                                             </div>
                                         </div>

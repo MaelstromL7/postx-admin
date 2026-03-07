@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
-import { apiRequest } from '../api/client';
+import { apiRequest, parseDate } from '../api/client';
 import {
     Activity,
     Clock,
@@ -80,7 +80,7 @@ export default function ActivityPage() {
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center gap-2 text-gray-400 text-sm">
                                                     <Clock size={14} />
-                                                    <span>{new Date(log.timestamp).toLocaleString()}</span>
+                                                    <span>{parseDate(log.timestamp).toLocaleString()}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
-import { apiRequest } from '../api/client';
+import { apiRequest, parseDate } from '../api/client';
 import {
     Mail, Calendar, ShieldAlert, ShieldCheck, Loader2, Search,
     UserCog, MonitorSmartphone, X, Plus, Trash2, Shield, RefreshCcw
@@ -128,8 +128,8 @@ function DevicesModal({ user, onClose }) {
                         <div key={device.id} className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between gap-4">
                             <div className="flex-1 min-w-0">
                                 <p className="text-white font-medium text-sm truncate">{device.device_name || 'Dispositivo desconocido'}</p>
-                                <p className="text-gray-500 text-[11px] mt-0.5">IP: {device.last_login_ip || '—'} · Expira: {new Date(device.expires_at).toLocaleDateString()}</p>
-                                <p className="text-gray-600 text-[10px]">Registrado: {new Date(device.created_at).toLocaleString()}</p>
+                                <p className="text-gray-500 text-[11px] mt-0.5">IP: {device.last_login_ip || '—'} · Expira: {parseDate(device.expires_at).toLocaleDateString()}</p>
+                                <p className="text-gray-600 text-[10px]">Registrado: {parseDate(device.created_at).toLocaleString()}</p>
                             </div>
                             <button onClick={() => revokeDevice(device.id)} disabled={revoking === device.id} className="px-3 py-1.5 text-xs font-bold rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-colors disabled:opacity-50 whitespace-nowrap">
                                 {revoking === device.id ? <Loader2 className="animate-spin" size={14} /> : 'Revocar'}
@@ -232,8 +232,8 @@ export default function UsersPage() {
             u.email,
             u.is_suspended ? 'SUSPENDIDO' : 'ACTIVO',
             u.is_platform_admin ? 'SÍ' : 'NO',
-            new Date(u.created_at).toLocaleDateString(),
-            u.last_login_at ? new Date(u.last_login_at).toLocaleString() : 'NUNCA',
+            parseDate(u.created_at).toLocaleDateString(),
+            u.last_login_at ? parseDate(u.last_login_at).toLocaleString() : 'NUNCA',
             u.last_login_ip || '',
             u.last_login_location || '',
             u.project_access?.map(pa => pa.project_name).join('; ') || ''
@@ -339,14 +339,14 @@ export default function UsersPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-5 text-gray-400 text-sm font-medium">
-                                            {new Date(user.created_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
+                                            {parseDate(user.created_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex flex-col text-sm">
                                                 {user.last_login_at ? (
                                                     <>
-                                                        <span className="text-white font-bold">{new Date(user.last_login_at).toLocaleDateString()}</span>
-                                                        <span className="text-[10px] text-gray-500 font-medium uppercase">{new Date(user.last_login_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                        <span className="text-white font-bold">{parseDate(user.last_login_at).toLocaleDateString()}</span>
+                                                        <span className="text-[10px] text-gray-500 font-medium uppercase">{parseDate(user.last_login_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                                         {user.last_login_location && <span className="text-[9px] text-accent/80 font-bold bg-accent/5 px-1 rounded-sm mt-1 w-fit border border-accent/10">{user.last_login_location}</span>}
                                                     </>
                                                 ) : <span className="text-gray-700 italic font-medium">Sin actividad</span>}
