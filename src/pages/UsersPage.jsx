@@ -150,6 +150,7 @@ export default function UsersPage() {
     const [users, setUsers] = useState([]);
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [actionLoading, setActionLoading] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, ACTIVE, SUSPENDED, ADMIN
@@ -162,14 +163,16 @@ export default function UsersPage() {
     const fetchData = async () => {
         try {
             setLoading(true);
+            setError(null);
             const [usersData, projectsData] = await Promise.all([
                 apiRequest('/admin/users'),
                 apiRequest('/admin/projects'),
             ]);
-            setUsers(usersData);
-            setProjects(projectsData);
+            setUsers(Array.isArray(usersData) ? usersData : []);
+            setProjects(Array.isArray(projectsData) ? projectsData : []);
         } catch (err) {
             console.error(err);
+            setError(err.message || 'Error al cargar usuarios');
         } finally {
             setLoading(false);
         }
@@ -263,7 +266,14 @@ export default function UsersPage() {
             {devicesUser && <DevicesModal user={devicesUser} onClose={() => setDevicesUser(null)} />}
 
             <main className="pl-64 p-8">
-                <header className="flex justify-between items-start mb-8">
+                {error && (
+                <div className="mb-6 bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-red-400 flex items-center justify-between">
+                    <span className="text-sm font-medium">{error}</span>
+                    <button onClick={fetchData} className="text-xs font-bold underline hover:no-underline ml-4">Reintentar</button>
+                </div>
+            )}
+
+            <header className="flex justify-between items-start mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-white tracking-tight">Usuarios</h1>
                         <p className="text-gray-400 mt-1 font-medium">Control de acceso global y seguridad</p>

@@ -205,7 +205,7 @@ function MembersDrawer({ project, onClose }) {
 
 // ─── CREATE PROJECT MODAL ───────────────────────────────────────────────────
 function CreateProjectModal({ onClose, onSuccess }) {
-    const [form, setForm] = useState({ name: '', type: 'FEATURE', owner_email: '' });
+    const [form, setForm] = useState({ name: '', type: 'FEATURE', owner_email: '', owner_first_name: '', owner_last_name: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -249,6 +249,14 @@ function CreateProjectModal({ onClose, onSuccess }) {
                         <label className="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Email del Dueño (Owner)</label>
                         <input required type="email" value={form.owner_email} onChange={e => setForm(f => ({ ...f, owner_email: e.target.value }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
                         <p className="text-[10px] text-gray-500 mt-1">Se enviará una invitación si el usuario no existe.</p>
+                    </div>
+                    <div>
+                        <label className="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Nombre del Dueño</label>
+                        <div className="grid grid-cols-2 gap-2">
+                            <input placeholder="Nombre" value={form.owner_first_name} onChange={e => setForm(f => ({ ...f, owner_first_name: e.target.value }))} className="bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
+                            <input placeholder="Apellido" value={form.owner_last_name} onChange={e => setForm(f => ({ ...f, owner_last_name: e.target.value }))} className="bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
+                        </div>
+                        <p className="text-[10px] text-gray-500 mt-1">Opcional si el usuario ya existe en la plataforma.</p>
                     </div>
                     {error && <p className="text-red-400 text-sm">{error}</p>}
                     <div className="flex gap-3 pt-2">
