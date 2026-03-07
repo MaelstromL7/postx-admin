@@ -7,6 +7,7 @@ import ProjectsPage from './pages/ProjectsPage';
 import UsersPage from './pages/UsersPage';
 import ActivityPage from './pages/ActivityPage';
 import AILogsPage from './pages/AILogsPage';
+import AnnouncementsPage from './pages/AnnouncementsPage';
 
 function App() {
   return (
@@ -56,6 +57,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <AILogsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/announcements"
+            element={
+              <ProtectedRoute>
+                <AnnouncementsPage />
               </ProtectedRoute>
             }
           />

@@ -7,7 +7,8 @@ import {
     Activity,
     LogOut,
     User,
-    Cpu
+    Cpu,
+    Megaphone
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -24,6 +25,7 @@ export default function Sidebar() {
         { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
         { label: 'Proyectos', path: '/projects', icon: FolderKanban },
         { label: 'Usuarios', path: '/users', icon: Users },
+        { label: 'Anuncios', path: '/announcements', icon: Megaphone },
         { label: 'Actividad', path: '/activity', icon: Activity },
         { label: 'IA Logs', path: '/ai-logs', icon: Cpu },
     ];
