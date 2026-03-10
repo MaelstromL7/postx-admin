@@ -8,7 +8,8 @@ import {
     LogOut,
     User,
     Cpu,
-    Megaphone
+    Megaphone,
+    FileCheck,
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -28,6 +29,7 @@ export default function Sidebar() {
         { label: 'Anuncios', path: '/announcements', icon: Megaphone },
         { label: 'Actividad', path: '/activity', icon: Activity },
         { label: 'IA Logs', path: '/ai-logs', icon: Cpu },
+        { label: 'T&C Auditoría', path: '/terms-acceptances', icon: FileCheck },
     ];
 
     return (

@@ -8,6 +8,7 @@ import UsersPage from './pages/UsersPage';
 import ActivityPage from './pages/ActivityPage';
 import AILogsPage from './pages/AILogsPage';
 import AnnouncementsPage from './pages/AnnouncementsPage';
+import TermsAcceptancesPage from './pages/TermsAcceptancesPage';
 
 function App() {
   return (
@@ -66,6 +67,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <AnnouncementsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/terms-acceptances"
+            element={
+              <ProtectedRoute>
+                <TermsAcceptancesPage />
               </ProtectedRoute>
             }
           />
