@@ -217,7 +217,7 @@ export default function UsersPage() {
             const data = await apiRequest(`/admin/impersonate/${user.id}`, { method: 'POST' });
             localStorage.setItem('postx_impersonate_token', data.access_token);
             localStorage.setItem('postx_impersonate_user', user.email);
-            window.open('https://app.postx.mx', '_blank');
+            window.open(`https://app.postx.mx/login?token=${data.access_token}`, '_blank');
         } catch (err) {
             alert('Error al impersonar usuario: ' + (err.message || 'desconocido'));
         } finally {
@@ -267,13 +267,13 @@ export default function UsersPage() {
 
             <main className="pl-64 p-8">
                 {error && (
-                <div className="mb-6 bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-red-400 flex items-center justify-between">
-                    <span className="text-sm font-medium">{error}</span>
-                    <button onClick={fetchData} className="text-xs font-bold underline hover:no-underline ml-4">Reintentar</button>
-                </div>
-            )}
+                    <div className="mb-6 bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-red-400 flex items-center justify-between">
+                        <span className="text-sm font-medium">{error}</span>
+                        <button onClick={fetchData} className="text-xs font-bold underline hover:no-underline ml-4">Reintentar</button>
+                    </div>
+                )}
 
-            <header className="flex justify-between items-start mb-8">
+                <header className="flex justify-between items-start mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-white tracking-tight">Usuarios</h1>
                         <p className="text-gray-400 mt-1 font-medium">Control de acceso global y seguridad</p>
