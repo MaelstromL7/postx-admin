@@ -217,7 +217,7 @@ export default function UsersPage() {
             const data = await apiRequest(`/admin/impersonate/${user.id}`, { method: 'POST' });
             localStorage.setItem('postx_impersonate_token', data.access_token);
             localStorage.setItem('postx_impersonate_user', user.email);
-            window.open(`https://app.postx.mx/login?token=${data.access_token}`, '_blank');
+            window.open(`https://app.postx.mx/login?token=${encodeURIComponent(data.access_token)}`, '_blank');
         } catch (err) {
             alert('Error al impersonar usuario: ' + (err.message || 'desconocido'));
         } finally {
