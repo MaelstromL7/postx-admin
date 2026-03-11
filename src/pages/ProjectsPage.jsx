@@ -313,9 +313,10 @@ function LicenseModal({ project, onClose, onSuccess }) {
                     <div>
                         <label className="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Plan</label>
                         <select value={form.plan_type} onChange={e => setForm(f => ({ ...f, plan_type: e.target.value }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                            <option value="TRIAL">TRIAL (GRATIS)</option>
-                            <option value="PRO">PRO (PAGO)</option>
-                            <option value="ENTERPRISE">ENTERPRISE</option>
+                            <option value="TRIAL">TRIAL (DEMO)</option>
+                            <option value="INDIE">INDIE — 500 GB / 15 asientos</option>
+                            <option value="MID">MID — 750 GB / 25 asientos</option>
+                            <option value="STUDIO">STUDIO — 1 TB / 35 asientos</option>
                         </select>
                     </div>
                     <div>
@@ -335,6 +336,14 @@ function LicenseModal({ project, onClose, onSuccess }) {
                         <input type="checkbox" id="is_active_check" checked={form.is_active} onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))} className="w-4 h-4 accent-accent" />
                         <label htmlFor="is_active_check" className="text-sm text-white font-medium cursor-pointer">Licencia Habilitada (Manual Override)</label>
                     </div>
+                    {project.license?.storage_used_bytes != null && (
+                        <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-800 space-y-1">
+                            <p className="text-xs text-gray-400 uppercase tracking-widest">Almacenamiento usado</p>
+                            <p className="text-sm text-white font-bold">
+                                {(project.license.storage_used_bytes / 1024 ** 3).toFixed(2)} GB
+                            </p>
+                        </div>
+                    )}
                     {error && <p className="text-red-400 text-sm">{error}</p>}
                     <div className="flex gap-3 pt-2">
                         <button type="button" onClick={onClose} className="flex-1 px-4 py-2 text-sm rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">Cancelar</button>
@@ -479,6 +488,13 @@ export default function ProjectsPage() {
                                         </td>
                                         <td className="px-6 py-5 text-gray-400 text-sm font-medium">{new Date(project.created_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                                         <td className="px-6 py-5">
+                                            {project.license?.plan_type && project.license.plan_type !== 'TRIAL' && (
+                                                <div className="mb-1.5">
+                                                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-accent/15 text-accent border border-accent/30">
+                                                        {project.license.plan_type}
+                                                    </span>
+                                                </div>
+                                            )}
                                             {project.license?.status === 'EXPIRED' || (project.license?.expires_at && new Date(project.license.expires_at) < new Date()) ? (
                                                 <div className="flex flex-col gap-1">
                                                     <div className="flex items-center space-x-2 text-red-500 bg-red-500/10 px-3 py-1 rounded-lg text-[10px] font-black w-fit border border-red-500/20"><XCircle size={12} /><span>EXPIRADA</span></div>
