@@ -63,7 +63,7 @@ function MembersDrawer({ project, onClose }) {
         try {
             const newMember = await apiRequest(`/admin/projects/${project.id}/members`, {
                 method: 'POST',
-                body: JSON.stringify({ ...addForm, modules_enabled: [] })
+                body: JSON.stringify({ ...addForm, modules_enabled: null })
             });
             setMembers(m => [...m, newMember]);
             setAddForm({ email: '', first_name: '', last_name: '', role: 'POST_COORDINATOR' });
