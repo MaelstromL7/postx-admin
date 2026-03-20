@@ -367,6 +367,7 @@ export default function ProjectsPage() {
     const [licenseProject, setLicenseProject] = useState(null);
     const [showCreate, setShowCreate] = useState(false);
     const [showBlockedOnly, setShowBlockedOnly] = useState(false);
+    const [deletingId, setDeletingId] = useState(null);
 
     useEffect(() => { fetchProjects(); }, []);
 
@@ -379,6 +380,19 @@ export default function ProjectsPage() {
             console.error(err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const deleteProject = async (project) => {
+        if (!confirm(`¿Eliminar permanentemente "${project.name}"? Esta acción no se puede deshacer.`)) return;
+        setDeletingId(project.id);
+        try {
+            await apiRequest(`/admin/projects/${project.id}`, { method: 'DELETE' });
+            setProjects(p => p.filter(x => x.id !== project.id));
+        } catch (err) {
+            alert('Error al eliminar proyecto: ' + err.message);
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -539,6 +553,19 @@ export default function ProjectsPage() {
                                                         className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 transition-all active:scale-95"
                                                     >
                                                         <Download size={16} />
+                                                    </button>
+                                                )}
+
+                                                {/* Eliminar proyecto */}
+                                                {deletingId === project.id ? (
+                                                    <div className="w-8 flex justify-center"><Loader2 className="animate-spin text-red-400" size={16} /></div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => deleteProject(project)}
+                                                        title="Eliminar proyecto permanentemente"
+                                                        className="p-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all active:scale-95"
+                                                    >
+                                                        <Trash2 size={16} />
                                                     </button>
                                                 )}
 
