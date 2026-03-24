@@ -277,7 +277,9 @@ function LicenseModal({ project, onClose, onSuccess }) {
         plan_type: project.license?.plan_type || 'TRIAL',
         status: project.license?.status || 'ACTIVE',
         is_active: project.license?.is_active ?? true,
-        expires_at: project.license?.expires_at ? new Date(project.license.expires_at).toISOString().split('T')[0] : ''
+        expires_at: project.license?.expires_at ? new Date(project.license.expires_at).toISOString().split('T')[0] : '',
+        extra_storage_bytes: project.license?.extra_storage_bytes || 0,
+        extra_members: project.license?.extra_members || 0,
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -314,9 +316,9 @@ function LicenseModal({ project, onClose, onSuccess }) {
                         <label className="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Plan</label>
                         <select value={form.plan_type} onChange={e => setForm(f => ({ ...f, plan_type: e.target.value }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent">
                             <option value="TRIAL">TRIAL (DEMO)</option>
-                            <option value="INDIE">INDIE — 500 GB / 15 asientos</option>
-                            <option value="MID">MID — 750 GB / 25 asientos</option>
-                            <option value="STUDIO">STUDIO — 1 TB / 35 asientos</option>
+                            <option value="INDIE">INDIE — 500 GB / 10 usuarios</option>
+                            <option value="MID">MID — 1 TB / 25 usuarios</option>
+                            <option value="STUDIO">STUDIO — 2 TB / 40 usuarios</option>
                         </select>
                     </div>
                     <div>
@@ -335,6 +337,31 @@ function LicenseModal({ project, onClose, onSuccess }) {
                     <div className="flex items-center gap-3 bg-gray-900/50 p-3 rounded-lg border border-gray-800">
                         <input type="checkbox" id="is_active_check" checked={form.is_active} onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))} className="w-4 h-4 accent-accent" />
                         <label htmlFor="is_active_check" className="text-sm text-white font-medium cursor-pointer">Licencia Habilitada (Manual Override)</label>
+                    </div>
+                    {/* Add-ons */}
+                    <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-800 space-y-3">
+                        <p className="text-xs text-accent uppercase tracking-widest font-bold">Add-ons</p>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="text-xs text-gray-400 mb-1 block">Almacenamiento Extra</label>
+                                <select value={form.extra_storage_bytes} onChange={e => setForm(f => ({ ...f, extra_storage_bytes: Number(e.target.value) }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                                    <option value={0}>Sin extra</option>
+                                    <option value={500 * 1024 ** 3}>+500 GB</option>
+                                    <option value={1024 * 1024 ** 3}>+1 TB</option>
+                                    <option value={2048 * 1024 ** 3}>+2 TB</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-xs text-gray-400 mb-1 block">Usuarios Extra</label>
+                                <select value={form.extra_members} onChange={e => setForm(f => ({ ...f, extra_members: Number(e.target.value) }))} className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                                    <option value={0}>Sin extra</option>
+                                    <option value={5}>+5 usuarios</option>
+                                    <option value={10}>+10 usuarios</option>
+                                    <option value={15}>+15 usuarios</option>
+                                    <option value={25}>+25 usuarios</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     {project.license?.storage_used_bytes != null && (
                         <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-800 space-y-1">
