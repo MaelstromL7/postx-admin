@@ -9,6 +9,7 @@ import ActivityPage from './pages/ActivityPage';
 import AILogsPage from './pages/AILogsPage';
 import AnnouncementsPage from './pages/AnnouncementsPage';
 import TermsAcceptancesPage from './pages/TermsAcceptancesPage';
+import SupportTicketsPage from './pages/SupportTicketsPage';
 
 function App() {
   return (
@@ -76,6 +77,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <TermsAcceptancesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/support-tickets"
+            element={
+              <ProtectedRoute>
+                <SupportTicketsPage />
               </ProtectedRoute>
             }
           />

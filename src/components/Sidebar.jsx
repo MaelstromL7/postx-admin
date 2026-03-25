@@ -10,6 +10,7 @@ import {
     Cpu,
     Megaphone,
     FileCheck,
+    HeadphonesIcon,
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -29,6 +30,7 @@ export default function Sidebar() {
         { label: 'Anuncios', path: '/announcements', icon: Megaphone },
         { label: 'Actividad', path: '/activity', icon: Activity },
         { label: 'IA Logs', path: '/ai-logs', icon: Cpu },
+        { label: 'Soporte', path: '/support-tickets', icon: HeadphonesIcon },
         { label: 'T&C Auditoría', path: '/terms-acceptances', icon: FileCheck },
     ];
 
