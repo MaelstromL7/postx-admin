@@ -66,7 +66,7 @@ export default function Sidebar() {
                         <User size={18} className="text-accent" />
                     </div>
                     <div className="overflow-hidden">
-                        <p className="text-sm font-semibold text-white truncate">{user?.email || 'leonard@postx.mx'}</p>
+                        <p className="text-sm font-semibold text-white truncate">{user?.email}</p>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-1.5 py-0.5 rounded">
                             Platform Admin
                         </span>

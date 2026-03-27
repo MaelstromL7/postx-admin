@@ -290,7 +290,7 @@ export default function SupportTicketsPage() {
                 prev.map((t) => (t.id === ticketId ? { ...t, ...updated } : t))
             );
         } catch (err) {
-            alert('Error actualizando ticket: ' + err.message);
+            setError(err.message || 'Error al actualizar el ticket.');
         } finally {
             setUpdating(false);
         }

@@ -224,7 +224,7 @@ export default function AnnouncementsPage() {
             });
             await fetchData();
         } catch (err) {
-            alert('Error: ' + err.message);
+            setError(err.message || 'Error al cambiar estado del anuncio.');
         } finally {
             setTogglingId(null);
         }
@@ -237,7 +237,7 @@ export default function AnnouncementsPage() {
             await apiRequest(`/admin/announcements/${a.id}`, { method: 'DELETE' });
             await fetchData();
         } catch (err) {
-            alert('Error: ' + err.message);
+            setError(err.message || 'Error al eliminar anuncio.');
         } finally {
             setDeletingId(null);
         }

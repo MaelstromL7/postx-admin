@@ -93,7 +93,7 @@ function DevicesModal({ user, onClose }) {
         try {
             const data = await apiRequest(`/admin/users/${user.id}/devices`);
             setDevices(data);
-        } catch (err) { console.error(err); }
+        } catch (err) { /* silently ignore device fetch errors */ }
         finally { setLoading(false); }
     };
 
@@ -171,7 +171,6 @@ export default function UsersPage() {
             setUsers(Array.isArray(usersData) ? usersData : []);
             setProjects(Array.isArray(projectsData) ? projectsData : []);
         } catch (err) {
-            console.error(err);
             setError(err.message || 'Error al cargar usuarios');
         } finally {
             setLoading(false);
@@ -215,8 +214,6 @@ export default function UsersPage() {
         try {
             setImpersonating(user.id);
             const data = await apiRequest(`/admin/impersonate/${user.id}`, { method: 'POST' });
-            localStorage.setItem('postx_impersonate_token', data.access_token);
-            localStorage.setItem('postx_impersonate_user', user.email);
             window.open(`https://app.postx.mx/login?token=${encodeURIComponent(data.access_token)}`, '_blank');
         } catch (err) {
             alert('Error al impersonar usuario: ' + (err.message || 'desconocido'));

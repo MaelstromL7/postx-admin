@@ -26,7 +26,6 @@ export function AuthProvider({ children }) {
             }
             setUser(userData);
         } catch (err) {
-            console.error('Auth check failed:', err);
             localStorage.removeItem('postx_admin_token');
             setError(err.message);
         } finally {
@@ -37,7 +36,9 @@ export function AuthProvider({ children }) {
     const getDeviceId = () => {
         let deviceId = localStorage.getItem('postx_admin_device_id');
         if (!deviceId) {
-            deviceId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+            const bytes = new Uint8Array(16);
+            crypto.getRandomValues(bytes);
+            deviceId = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
             localStorage.setItem('postx_admin_device_id', deviceId);
         }
         return deviceId;
@@ -48,7 +49,6 @@ export function AuthProvider({ children }) {
         setError(null);
         const trimmedEmail = email.trim();
         try {
-            console.log('Intentando login para:', trimmedEmail);
             const data = await apiRequest('/auth/login', {
                 method: 'POST',
                 body: JSON.stringify({
@@ -68,22 +68,18 @@ export function AuthProvider({ children }) {
                 throw new Error('El servidor no devolvió un token de acceso');
             }
 
-            localStorage.setItem('postx_admin_token', token);
-            console.log('Login exitoso, verificando permisos de administrador...');
-
             const userData = await apiRequest('/auth/me', {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             if (!userData.is_platform_admin) {
-                localStorage.removeItem('postx_admin_token');
                 throw new Error('Acceso restringido a administradores de plataforma');
             }
 
+            localStorage.setItem('postx_admin_token', token);
             setUser(userData);
             return { status: 'success' };
         } catch (err) {
-            console.error('Error en el proceso de login:', err);
             setError(err.message);
             throw err;
         } finally {
@@ -110,21 +106,18 @@ export function AuthProvider({ children }) {
                 throw new Error('El servidor no devolvió un token de acceso tras verificar 2FA');
             }
 
-            localStorage.setItem('postx_admin_token', token);
-
             const userData = await apiRequest('/auth/me', {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             if (!userData.is_platform_admin) {
-                localStorage.removeItem('postx_admin_token');
                 throw new Error('Acceso restringido a administradores de plataforma');
             }
 
+            localStorage.setItem('postx_admin_token', token);
             setUser(userData);
             return { status: 'success' };
         } catch (err) {
-            console.error('Error en verificación 2FA:', err);
             setError(err.message);
             throw err;
         } finally {
