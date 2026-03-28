@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '../components/Sidebar';
 import { apiRequest, parseDate } from '../api/client';
-import { Cpu, Loader2, RefreshCcw, Zap, Clock, Hash, FolderOpen, ChevronDown } from 'lucide-react';
+import { Cpu, Loader2, RefreshCcw, Zap, Clock, Hash, FolderOpen, ChevronDown, User as UserIcon } from 'lucide-react';
 
 const PAGE_SIZE = 75;
 
@@ -41,9 +41,10 @@ export default function AILogsPage() {
         : 0;
 
     const exportToCSV = () => {
-        const headers = ['Fecha', 'Proyecto', 'Modelo', 'Prompt Tokens', 'Completion Tokens', 'Total Tokens', 'Latencia (ms)', 'Prompt'];
+        const headers = ['Fecha', 'Usuario', 'Proyecto', 'Modelo', 'Prompt Tokens', 'Completion Tokens', 'Total Tokens', 'Latencia (ms)', 'Prompt'];
         const rows = logs.map(l => [
             parseDate(l.created_at).toLocaleString(),
+            l.user_name || '',
             l.project_name || '',
             l.model_id,
             l.prompt_tokens || 0,
@@ -145,6 +146,7 @@ export default function AILogsPage() {
                                     <thead>
                                         <tr className="border-b border-gray-800 bg-gray-900/80">
                                             <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Fecha</th>
+                                            <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Usuario</th>
                                             <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Proyecto</th>
                                             <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Modelo</th>
                                             <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Tokens</th>
@@ -157,6 +159,16 @@ export default function AILogsPage() {
                                             <tr key={log.id} className="hover:bg-gray-800/30 transition-colors">
                                                 <td className="px-5 py-3.5 text-xs text-gray-400 whitespace-nowrap">
                                                     {parseDate(log.created_at).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' })}
+                                                </td>
+                                                <td className="px-5 py-3.5">
+                                                    {log.user_name ? (
+                                                        <div className="flex items-center gap-1.5 text-xs text-gray-300">
+                                                            <UserIcon size={12} className="text-gray-500 shrink-0" />
+                                                            <span className="truncate max-w-[140px]">{log.user_name}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-gray-600 text-xs">—</span>
+                                                    )}
                                                 </td>
                                                 <td className="px-5 py-3.5">
                                                     {log.project_name ? (
